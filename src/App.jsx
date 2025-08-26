@@ -1,7 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, BookOpen, Calendar, BarChart3, Clock, Check, X, Filter, Search, Bell, Target, User, LogOut, UserPlus, Moon, Sun, GripVertical } from 'lucide-react';
-ReactDOM.render( <React.StrictMode> <HashRouter> <App /> </HashRouter> </React.StrictMode>, document.getElementById('root') );
+import { HashRouter, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
+
+// Main App component with routing
+function App() {
+  return (
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<StudyPlanner />} />
+        <Route path="/tasks" element={<StudyPlanner />} />
+        <Route path="/subjects" element={<StudyPlanner />} />
+        <Route path="/calendar" element={<StudyPlanner />} />
+        <Route path="/analytics" element={<StudyPlanner />} />
+      </Routes>
+    </HashRouter>
+  )
+}
+
 const StudyPlanner = () => {
+  const location = useLocation();
+  
+  // Get current tab from URL
+  const getCurrentTab = () => {
+    const path = location.pathname.substring(1); // Remove leading slash
+    return path || 'dashboard';
+  };
+  
+  const activeTab = getCurrentTab();
+
   // Theme Management
   const [darkMode, setDarkMode] = useState(false);
 
@@ -12,7 +39,6 @@ const StudyPlanner = () => {
   const [newUsername, setNewUsername] = useState('');
   const [loginUsername, setLoginUsername] = useState('');
 
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [subjects, setSubjects] = useState([
     { id: 1, name: 'Computer Science', color: 'bg-blue-500' },
     { id: 2, name: 'Mathematics', color: 'bg-purple-500' },
@@ -598,15 +624,15 @@ const StudyPlanner = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="flex space-x-8">
                     {[
-                      { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-                      { id: 'tasks', label: 'Tasks', icon: BookOpen },
-                      { id: 'subjects', label: 'Subjects', icon: BookOpen },
-                      { id: 'calendar', label: 'Calendar', icon: Calendar },
-                      { id: 'analytics', label: 'Analytics', icon: Target }
+                      { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/dashboard' },
+                      { id: 'tasks', label: 'Tasks', icon: BookOpen, path: '/tasks' },
+                      { id: 'subjects', label: 'Subjects', icon: BookOpen, path: '/subjects' },
+                      { id: 'calendar', label: 'Calendar', icon: Calendar, path: '/calendar' },
+                      { id: 'analytics', label: 'Analytics', icon: Target, path: '/analytics' }
                     ].map(tab => (
-                      <button
+                      <Link
                         key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
+                        to={tab.path}
                         className={`flex items-center px-3 py-4 border-b-2 font-medium text-sm transition-colors duration-300 ${
                           activeTab === tab.id
                             ? darkMode
@@ -619,7 +645,7 @@ const StudyPlanner = () => {
                       >
                         <tab.icon className="mr-2" size={18} />
                         {tab.label}
-                      </button>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -1602,19 +1628,31 @@ const StudyPlanner = () => {
         {/* Analytics Tab */}
         {activeTab === 'analytics' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Study Analytics</h2>
+            <div className={`rounded-lg shadow p-6 transition-colors duration-300 ${
+              darkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <h2 className={`text-xl font-semibold mb-6 transition-colors duration-300 ${
+                darkMode ? 'text-white' : 'text-gray-900'
+              }`}>Study Analytics</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Productivity Overview</h3>
+                  <h3 className={`text-lg font-medium mb-4 transition-colors duration-300 ${
+                    darkMode ? 'text-white' : 'text-gray-900'
+                  }`}>Productivity Overview</h3>
                   <div className="space-y-4">
                     <div>
                       <div className="flex justify-between mb-2">
-                        <span className="text-sm text-gray-600">Tasks Completed</span>
-                        <span className="text-sm font-medium">{stats.completed}/{stats.total}</span>
+                        <span className={`text-sm transition-colors duration-300 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>Tasks Completed</span>
+                        <span className={`text-sm font-medium transition-colors duration-300 ${
+                          darkMode ? 'text-white' : 'text-gray-900'
+                        }`}>{stats.completed}/{stats.total}</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className={`w-full rounded-full h-2 transition-colors duration-300 ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                      }`}>
                         <div 
                           className="bg-green-500 h-2 rounded-full"
                           style={{ width: `${stats.completionRate}%` }}
@@ -1624,19 +1662,29 @@ const StudyPlanner = () => {
                     
                     <div className="grid grid-cols-2 gap-4 pt-4">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">{Math.round(stats.totalStudyTime / 60)}</p>
-                        <p className="text-sm text-gray-600">Hours Studied</p>
+                        <p className={`text-2xl font-bold transition-colors duration-300 ${
+                          darkMode ? 'text-blue-400' : 'text-blue-600'
+                        }`}>{Math.round(stats.totalStudyTime / 60)}</p>
+                        <p className={`text-sm transition-colors duration-300 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>Hours Studied</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-green-600">{stats.completionRate}%</p>
-                        <p className="text-sm text-gray-600">Success Rate</p>
+                        <p className={`text-2xl font-bold transition-colors duration-300 ${
+                          darkMode ? 'text-green-400' : 'text-green-600'
+                        }`}>{stats.completionRate}%</p>
+                        <p className={`text-sm transition-colors duration-300 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>Success Rate</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Subject Distribution</h3>
+                  <h3 className={`text-lg font-medium mb-4 transition-colors duration-300 ${
+                    darkMode ? 'text-white' : 'text-gray-900'
+                  }`}>Subject Distribution</h3>
                   <div className="space-y-3">
                     {subjects.map(subject => {
                       const subjectTasks = tasks.filter(t => t.subject === subject.name);
@@ -1646,9 +1694,13 @@ const StudyPlanner = () => {
                         <div key={subject.id} className="flex items-center justify-between">
                           <div className="flex items-center">
                             <div className={`w-3 h-3 rounded-full mr-3 ${subject.color}`}></div>
-                            <span className="text-sm text-gray-700">{subject.name}</span>
+                            <span className={`text-sm transition-colors duration-300 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>{subject.name}</span>
                           </div>
-                          <span className="text-sm font-medium">{subjectTasks.length} ({Math.round(percentage)}%)</span>
+                          <span className={`text-sm font-medium transition-colors duration-300 ${
+                            darkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{subjectTasks.length} ({Math.round(percentage)}%)</span>
                         </div>
                       );
                     })}
@@ -1665,4 +1717,4 @@ const StudyPlanner = () => {
   );
 };
 
-export default StudyPlanner;
+export default App;
