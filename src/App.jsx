@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, BookOpen, Calendar, BarChart3, Clock, Check, X, Filter, Search, Bell, Target, User, LogOut, UserPlus, Moon, Sun, GripVertical } from 'lucide-react';
-
+ReactDOM.render( <React.StrictMode> <HashRouter> <App /> </HashRouter> </React.StrictMode>, document.getElementById('root') );
 const StudyPlanner = () => {
   // Theme Management
   const [darkMode, setDarkMode] = useState(false);
